@@ -54,10 +54,6 @@ function addUser(user){
     users['users_list'].push(user);
 }
 
-function removeUser(user){
-    users['users_list'].pop(user);
-}
-
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -98,8 +94,9 @@ app.delete('/users/:id', (req, res) => {
     if (result === undefined || result.length == 0)
         res.status(404).send('Resource not found.');
     else {
-        removeUser(result);
-        res.send("user removed");
+        let index = users['users_list'].indexOf(result);
+        users['users_list'].splice(index, 1);
+        res.send();
     }
 });
 
