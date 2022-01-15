@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { response } = require('express');
 const app = express();
 const port = 5000;
 
@@ -37,21 +38,31 @@ const users = {
     ]
  }
 
- const findUserByName = (name) => { 
-    return users['users_list'].filter( (user) => user['name'] === name); 
-}
-
 function findUserById(id) {
     return users['users_list'].find( (user) => user['id'] === id); // or line below
     //return users['users_list'].filter( (user) => user['id'] === id);
 }
 
-const findUserByNameAndJob = (name, job) => { 
-    return users['users_list'].filter( (user) => (user['name'] === name && user['job'] === job)); 
-}
-
 function addUser(user){
     users['users_list'].push(user);
+}
+
+function randomID() {
+    var id = '';
+    var char = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var charLength = char.length;
+    for (var i = 0; i < 6; i++){
+        id += char.charAt(Math.floor(Math.random() * charLength));
+    }
+    return id;
+}
+
+const findUserByName = (name) => { 
+    return users['users_list'].filter( (user) => user['name'] === name); 
+}
+
+const findUserByNameAndJob = (name, job) => { 
+    return users['users_list'].filter( (user) => (user['name'] === name && user['job'] === job)); 
 }
 
 app.get('/', (req, res) => {
@@ -72,7 +83,6 @@ app.get('/users', (req, res) => {
         res.send(result);
     }
     else{
-        console.log(users);
         res.send(users);
     }
 });
@@ -96,14 +106,15 @@ app.delete('/users/:id', (req, res) => {
     else {
         let index = users['users_list'].indexOf(result);
         users['users_list'].splice(index, 1);
-        res.send();
+        res.send("User removed");
     }
 });
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
+    userToAdd['id'] = randomID();
     addUser(userToAdd);
-    res.status(200).end();
+    res.status(201).send(userToAdd).end();
 });
 
 app.listen(port, () => {
